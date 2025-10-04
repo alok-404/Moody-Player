@@ -4,7 +4,10 @@ const cors = require('cors')
 
 const app = express(); 
   //Server Create
-app.use(cors()); //middleware for frontend and backend connection
+app.use(cors({
+  origin: "https://moodsongs.vercel.app/", // ya jo bhi frontend ka URL hai
+}));
+
 app.use(express.json()) // middleware
 
 

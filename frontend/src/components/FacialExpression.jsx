@@ -1,98 +1,87 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as faceapi from 'face-api.js';
-import axios from "axios"
+import axios from "axios";
 
-export default function FacialExpression({setsongs}) {
+export default function FacialExpression({ setsongs }) {
   const videoRef = useRef();
-  const [expression, setExpression] = useState('No face detected');
+  const [expression, setExpression] = useState('Ready to Scan');
+  const [isCamOn, setIsCamOn] = useState(false);
 
   const loadModels = async () => {
     const MODEL_URL = '/models';
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-    await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL)
+    ]);
+  };
+
+  const toggleCamera = () => {
+    if (isCamOn) {
+      const stream = videoRef.current.srcObject;
+      stream.getTracks().forEach(track => track.stop());
+      setIsCamOn(false);
+    } else {
+      startVideo();
+    }
   };
 
   const startVideo = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: true })
       .then((stream) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          setIsCamOn(true);
         }
-      })
-      .catch((err) => {
-  console.error('Error accessing webcam:', err);
-  alert('Please allow camera access in your browser settings.');
-});
-
+      }).catch(err => alert("Camera Access Denied"));
   };
 
   const detectMood = async () => {
-    const detections = await faceapi
-      .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
-      .withFaceExpressions();
+    if (!isCamOn) return alert("Pehle camera on karein!");
+    const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceExpressions();
 
-    if (!detections || detections.length === 0) {
-      console.log('No Face Detected');
-      setExpression('No face detected');
-      return;
+    if (detections?.length > 0) {
+      const moods = detections[0].expressions;
+      const topMood = Object.keys(moods).reduce((a, b) => moods[a] > moods[b] ? a : b);
+      setExpression(topMood);
     }
-
-    let mostProbableExpression = 0;
-    let _expression = '';
-
-    for (const expression of Object.keys(detections[0].expressions)) {
-      if (detections[0].expressions[expression] > mostProbableExpression) {
-        mostProbableExpression = detections[0].expressions[expression];
-        _expression = expression;
-      }
-    }
-
-    console.log('Most Probable Expression:', _expression, mostProbableExpression.toFixed(2));
-    setExpression(_expression);
   };
 
-  // jo api hit krni ho
-  // get http://localhost:3000/songs?mood=happy
+  useEffect(() => { loadModels(); }, []);
 
-useEffect(() => {
-  if (!expression) return;
-  const timeout = setTimeout(() => {
+  useEffect(() => {
+    if (expression === 'Ready to Scan' || !expression) return;
     axios.get(`http://localhost:3000/songs?mood=${expression}`)
       .then(res => setsongs(res.data.songs))
       .catch(console.error);
-  }, 800); // wait 800ms after last change
-
-  return () => clearTimeout(timeout);
-}, [expression]);
-
-
-  useEffect(() => {
-    loadModels().then(() => {
-      startVideo();
-    });
-  }, []);
+  }, [expression]);
 
   return (
-    <div className="bg-amber-800 rounded-xl p-4 flex flex-col items-center gap-5 shadow-md">
-
-           <div className="mt-4 px-4 py-4 bg-black text-white rounded-md text-center w-[80%]">
-        Detected Expression: <span className="font-bold text-amber-400 capitalize">{expression}</span>
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl overflow-hidden relative">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="font-medium opacity-70">Mood Analysis</h3>
+        <button onClick={toggleCamera} className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${isCamOn ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+          {isCamOn ? 'STOP CAM' : 'START CAM'}
+        </button>
       </div>
 
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        className="rounded-lg w-full md:mt-5 h-[400px] object-cover"
-      />
-   
-      <button
-        onClick={detectMood}
-        className=" px-4 py-2 bg-black text-white rounded-md hover:bg-zinc-700 transition-all md:my-3"
-      >
-        Detect Mood
-      </button>
+      <div className="relative group">
+        <video ref={videoRef} autoPlay muted className={`rounded-2xl w-full h-[320px] object-cover bg-black/40 transition-all ${!isCamOn && 'opacity-20'}`} />
+        
+        {isCamOn && (
+          <div className="absolute inset-0 border-2 border-orange-500/30 rounded-2xl pointer-events-none animate-pulse"></div>
+        )}
+      </div>
+
+      <div className="mt-6 flex flex-col items-center gap-4">
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-widest opacity-50 mb-1">Detected Vibe</p>
+          <h2 className="text-3xl font-bold text-orange-400 capitalize">{expression}</h2>
+        </div>
+        
+        <button onClick={detectMood} className="w-full py-4 bg-orange-600 hover:bg-orange-500 rounded-2xl font-bold shadow-lg shadow-orange-900/20 transition-all active:scale-95">
+          Scan My Mood
+        </button>
+      </div>
     </div>
   );
 }

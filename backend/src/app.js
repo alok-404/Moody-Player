@@ -5,7 +5,7 @@ const cors = require('cors')
 const app = express(); 
   //Server Create
 app.use(cors({
-  origin: "https://moodsongs.vercel.app/", // ya jo bhi frontend ka URL hai
+  origin: "https://moodsongs.vercel.app", // ya jo bhi frontend ka URL hai https://moodsongs.vercel.app/
 }));
 
 app.use(express.json()) // middleware

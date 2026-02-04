@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 
 const Songlist = ({ songs }) => {
   const [currentSongIndex, setCurrentSongIndex] = useState(null);
@@ -6,15 +6,17 @@ const Songlist = ({ songs }) => {
   const [progress, setProgress] = useState({});
   const audioRefs = useRef([]);
 
-  // Play/Pause song safely
+  // Play / Pause safely
   const handlePlayPause = (index) => {
     const audioEl = audioRefs.current[index];
     if (!audioEl) return;
 
     if (currentSongIndex === index) {
-      isPlaying ? audioEl.pause() : audioEl.play();
+      if (isPlaying) audioEl.pause();
+      else audioEl.play();
       setIsPlaying(!isPlaying);
     } else {
+      // Pause all other audios
       audioRefs.current.forEach((audio) => audio?.pause());
       audioEl.play();
       setCurrentSongIndex(index);
@@ -22,12 +24,12 @@ const Songlist = ({ songs }) => {
     }
   };
 
-  // Seek bar handler
+  // Seek bar change
   const handleSeek = (index, value) => {
     const audio = audioRefs.current[index];
     if (!audio || !audio.duration) return;
-    const newTime = (value / 100) * audio.duration;
-    audio.currentTime = newTime;
+
+    audio.currentTime = (value / 100) * audio.duration;
     setProgress((prev) => ({ ...prev, [index]: value }));
   };
 
@@ -35,6 +37,7 @@ const Songlist = ({ songs }) => {
   const updateProgress = (index) => {
     const audio = audioRefs.current[index];
     if (!audio || !audio.duration) return;
+
     const value = (audio.currentTime / audio.duration) * 100;
     setProgress((prev) => ({ ...prev, [index]: value }));
   };
@@ -55,7 +58,6 @@ const Songlist = ({ songs }) => {
               }`}
             >
               <div className="flex items-center gap-4">
-                {/* Icon Placeholder */}
                 <div className="w-14 h-14 bg-gradient-to-br cursor-pointer from-zinc-700 to-zinc-800 rounded-xl flex items-center justify-center text-2xl shadow-inner">
                   {currentSongIndex === index && isPlaying ? "🎵" : "📻"}
                 </div>
@@ -73,7 +75,7 @@ const Songlist = ({ songs }) => {
                 </button>
               </div>
 
-              {/* Seek Bar */}
+              {/* Seek bar */}
               {currentSongIndex === index && (
                 <div className="mt-4 px-2">
                   <input

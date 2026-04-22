@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import Songlist from './components/Songlist';
-import FacialExpression from './components/FacialExpression';
+import React, { useState, useEffect } from "react";
+import Songlist from "./components/Songlist";
+import FacialExpression from "./components/FacialExpression";
+import AddSong from "./components/AddSong";
 
 const App = () => {
   const [songs, setsongs] = useState([]);
+  const [showForm, setShowForm] = useState(false);
   const [isDark, setIsDark] = useState(true);
 
   // Load saved theme
@@ -19,10 +21,23 @@ const App = () => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
+
+  useEffect(() => {
+  fetch("https://moody-player-database.onrender.com");
+}, []);
+
   return (
     <div className={isDark ? "dark" : ""}>
-      <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-white' : 'bg-zinc-100 text-zinc-900'} font-sans`}>
-        
+      <div
+        className={`min-h-screen transition-colors duration-500 ${isDark ? "bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-900"} font-sans`}
+      >
         {/* Dynamic Background Blur (Image Style) */}
         <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 blur-[120px] rounded-full"></div>
@@ -36,13 +51,21 @@ const App = () => {
               <div className="w-8 h-8 bg-gradient-to-tr from-orange-500 to-red-600 rounded-lg shadow-lg"></div>
               <h1 className="text-xl font-bold tracking-tight">Moody Player</h1>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <button 
+              {/* ADD SONG BUTTON */}
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="px-3 py-1 bg-orange-500 rounded-md text-sm hover:scale-105 transition"
+              >
+                ➕ Add Song
+              </button>
+
+              <button
                 onClick={() => setIsDark(!isDark)}
                 className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all border border-white/10"
               >
-                {isDark ? '☀️' : '🌙'}
+                {isDark ? "☀️" : "🌙"}
               </button>
 
               <img
@@ -55,6 +78,15 @@ const App = () => {
 
           {/* Main Content */}
           <main className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
+            
+              {/* SHOW FORM */}
+  {showForm && (
+    <div className="w-full mb-4">
+      <AddSong />
+    </div>
+  )}
+
+            
             <div className="w-full lg:w-[450px]">
               <FacialExpression setsongs={setsongs} />
             </div>

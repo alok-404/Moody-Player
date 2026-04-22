@@ -1,20 +1,26 @@
 const express = require("express");
-const songRoute = require("./routes/song.routes")
-const cors = require('cors')
+const songRoute = require("./routes/song.routes");
+const cors = require("cors");
 
-const app = express(); 
-  //Server Create
-app.use(cors({
-  origin: ["https://moodsongs.vercel.app", "http://localhost:5173"]
- // ya jo bhi frontend ka URL hai https://moodsongs.vercel.app/
-}));
+const app = express();
+//Server Create
+app.use(
+  cors({
+    origin: [
+      "https://moodsongs.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+     methods: ["GET", "POST"],
+  credentials: true
+    // ya jo bhi frontend ka URL hai https://moodsongs.vercel.app/
+  }),
+);
 
-app.use(express.json()) // middleware
-
+app.use(express.json()); // middleware
 
 // ab hota ky hai song.routes pe jo hum api use krne wale hai wo by default express nahi pechan pata hai iske liye hum app.js mn express ko batate hai ki bhyii jo hum api use krh rahein hai song.route mn wo tum use krh shkte ho ...thats it...
 
-app.use('/', songRoute);
-
+app.use("/", songRoute);
 
 module.exports = app;

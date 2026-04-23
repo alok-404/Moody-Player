@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import Songlist from './components/Songlist';
-import FacialExpression from './components/FacialExpression';
+import React, { useState, useEffect } from "react";
+import Songlist from "./components/Songlist";
+import FacialExpression from "./components/FacialExpression";
+import AddSong from "./components/AddSong";
 
 const App = () => {
   const [songs, setsongs] = useState([]);
+  const [showForm, setShowForm] = useState(false);
   const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+  fetch("https://moody-player-database.onrender.com/songs?mood=neutral")
+    .catch(() => {});
+}, []);
 
   // Load saved theme
   useEffect(() => {
@@ -19,10 +26,19 @@ const App = () => {
     localStorage.setItem("theme", isDark ? "dark" : "light");
   }, [isDark]);
 
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
+
   return (
     <div className={isDark ? "dark" : ""}>
-      <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'bg-zinc-950 text-white' : 'bg-zinc-100 text-zinc-900'} font-sans`}>
-        
+      <div
+        className={`min-h-screen transition-colors duration-500 ${isDark ? "bg-zinc-950 text-white" : "bg-zinc-100 text-zinc-900"} font-sans`}
+      >
         {/* Dynamic Background Blur (Image Style) */}
         <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 blur-[120px] rounded-full"></div>
@@ -36,13 +52,21 @@ const App = () => {
               <div className="w-8 h-8 bg-gradient-to-tr from-orange-500 to-red-600 rounded-lg shadow-lg"></div>
               <h1 className="text-xl font-bold tracking-tight">Moody Player</h1>
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <button 
+              {/* ADD SONG BUTTON */}
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="px-3 py-1 bg-orange-500 rounded-md text-sm hover:scale-105 transition"
+              >
+                ➕ Add Song
+              </button>
+
+              <button
                 onClick={() => setIsDark(!isDark)}
                 className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-all border border-white/10"
               >
-                {isDark ? '☀️' : '🌙'}
+                {isDark ? "☀️" : "🌙"}
               </button>
 
               <img

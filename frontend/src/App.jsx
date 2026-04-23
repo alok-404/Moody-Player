@@ -30,7 +30,7 @@ const App = () => {
   }, [isDark]);
 
   useEffect(() => {
-  fetch("https://moody-player-database.onrender.com");
+  fetch("https://moody-player-database.onrender.com/songs?mood=neutral");
 }, []);
 
   return (

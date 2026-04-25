@@ -9,6 +9,9 @@ const AddSong = () => {
     audio: null,
   });
 
+  // Env variable use karna best practice hai
+  const API = import.meta.env.VITE_API_URL;
+
   const handleChange = (e) => {
     if (e.target.name === "audio") {
       setForm({ ...form, audio: e.target.files[0] });
@@ -27,7 +30,8 @@ const AddSong = () => {
     data.append("audio", form.audio);
 
     try {
-      await axios.post("http://localhost:3000/songs", data);
+      // Dynamic URL use karein
+      await axios.post(`${API}/songs`, data);
       alert("Song Uploaded 🚀");
     } catch (err) {
       console.log(err);
@@ -35,18 +39,14 @@ const AddSong = () => {
     }
   };
 
-
-
-
-
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-zinc-800 rounded-xl">
-      <input type="text" name="title" placeholder="Title" onChange={handleChange} className="block mb-2" />
-      <input type="text" name="artist" placeholder="Artist" onChange={handleChange} className="block mb-2" />
-      <input type="text" name="mood" placeholder="Mood (happy/sad)" onChange={handleChange} className="block mb-2" />
+    <form onSubmit={handleSubmit} className="p-4 bg-zinc-800 rounded-xl text-white">
+      <input type="text" name="title" placeholder="Title" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
+      <input type="text" name="artist" placeholder="Artist" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
+      <input type="text" name="mood" placeholder="Mood (happy/sad)" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
       <input type="file" name="audio" accept="audio/*" onChange={handleChange} className="block mb-2" />
       
-      <button type="submit" className="bg-orange-500 px-4 py-2 rounded">
+      <button type="submit" className="bg-orange-500 px-4 py-2 rounded font-bold hover:bg-orange-600 transition-all">
         Upload Song
       </button>
     </form>

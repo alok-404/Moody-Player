@@ -34,6 +34,13 @@ const App = () => {
     }
   }, [isDark]);
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+  fetch("https://moody-player-database.onrender.com/songs?mood=neutral");
+}, []);
+
+>>>>>>> a09d63bbcf8c163205a305be14d5fb52d6b5305b
   return (
     <div className={isDark ? "dark" : ""}>
       <div
@@ -79,6 +86,15 @@ const App = () => {
 
           {/* Main Content */}
           <main className="max-w-7xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
+            
+              {/* SHOW FORM */}
+  {showForm && (
+    <div className="w-full mb-4">
+      <AddSong />
+    </div>
+  )}
+
+            
             <div className="w-full lg:w-[450px]">
               <FacialExpression setsongs={setsongs} />
             </div>

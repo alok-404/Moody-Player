@@ -7,6 +7,11 @@ export default function FacialExpression({ setsongs }) {
   const [expression, setExpression] = useState("Ready to Scan");
   const [isCamOn, setIsCamOn] = useState(false);
 
+  const API =
+    window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "https://moody-player-database.onrender.com";
+
   const loadModels = async () => {
     const MODEL_URL = "/models";
     await Promise.all([
@@ -61,9 +66,8 @@ export default function FacialExpression({ setsongs }) {
     if (expression === "Ready to Scan" || !expression) return;
 
     axios
-      .get(
-        `https://moody-player-database.onrender.com/songs?mood=${expression}`,
-      )
+
+      .get(`${API}/songs?mood=${expression}`)
       .then((res) => setsongs(res.data.songs))
       .catch(console.error);
   }, [expression]);

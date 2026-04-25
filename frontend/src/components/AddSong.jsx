@@ -10,7 +10,7 @@ const AddSong = () => {
   });
 
   // Env variable use karna best practice hai
-  const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
   const handleChange = (e) => {
     if (e.target.name === "audio") {
@@ -40,13 +40,43 @@ const AddSong = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-zinc-800 rounded-xl text-white">
-      <input type="text" name="title" placeholder="Title" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
-      <input type="text" name="artist" placeholder="Artist" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
-      <input type="text" name="mood" placeholder="Mood (happy/sad)" onChange={handleChange} className="block mb-2 p-2 bg-zinc-700 rounded w-full" />
-      <input type="file" name="audio" accept="audio/*" onChange={handleChange} className="block mb-2" />
-      
-      <button type="submit" className="bg-orange-500 px-4 py-2 rounded font-bold hover:bg-orange-600 transition-all">
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 bg-zinc-800 rounded-xl text-white"
+    >
+      <input
+        type="text"
+        name="title"
+        placeholder="Title"
+        onChange={handleChange}
+        className="block mb-2 p-2 bg-zinc-700 rounded w-full"
+      />
+      <input
+        type="text"
+        name="artist"
+        placeholder="Artist"
+        onChange={handleChange}
+        className="block mb-2 p-2 bg-zinc-700 rounded w-full"
+      />
+      <input
+        type="text"
+        name="mood"
+        placeholder="Mood (happy/sad)"
+        onChange={handleChange}
+        className="block mb-2 p-2 bg-zinc-700 rounded w-full"
+      />
+      <input
+        type="file"
+        name="audio"
+        accept="audio/*"
+        onChange={handleChange}
+        className="block mb-2"
+      />
+
+      <button
+        type="submit"
+        className="bg-orange-500 px-4 py-2 rounded font-bold hover:bg-orange-600 transition-all"
+      >
         Upload Song
       </button>
     </form>

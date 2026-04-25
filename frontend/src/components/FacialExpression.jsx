@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import axios from "axios";
+import * as tf from "@tensorflow/tfjs";
 
 export default function FacialExpression({ setsongs }) {
   const videoRef = useRef();
@@ -58,9 +59,15 @@ export default function FacialExpression({ setsongs }) {
     }
   };
 
-  useEffect(() => {
-    loadModels();
-  }, []);
+useEffect(() => {
+  const init = async () => {
+    await tf.setBackend("cpu"); // 🔥 force CPU
+    await tf.ready();
+    await loadModels();
+  };
+
+  init();
+}, []);
 
   useEffect(() => {
     if (expression === "Ready to Scan" || !expression) return;

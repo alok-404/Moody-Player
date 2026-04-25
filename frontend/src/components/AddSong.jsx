@@ -35,6 +35,10 @@ const AddSong = () => {
     }
   };
 
+
+
+
+
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-zinc-800 rounded-xl">
       <input type="text" name="title" placeholder="Title" onChange={handleChange} className="block mb-2" />

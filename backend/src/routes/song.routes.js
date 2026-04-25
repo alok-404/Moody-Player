@@ -23,7 +23,7 @@ router.post('/songs',upload.single("audio"),async (req,res)=>{
         title:req.body.title,
         artist:req.body.artist,
         audio:fileData.url,
-        mood:req.body.mood
+        mood: req.body.mood.toLowerCase().trim()
     })
 
     
@@ -49,11 +49,9 @@ router.post('/songs',upload.single("audio"),async (req,res)=>{
 router.get("/songs" , async (req , res)=>{
     const {mood} = req.query ; //asum = mood = neutral
 
-    const songs = await songModel.find({
-        mood:mood 
-
-            // mood:"neutral" //query = aap hume sare songs lake do jinka mood neutralhai
-    })
+  const songs = await songModel.find({
+  mood: mood.toLowerCase().trim()
+});
     
             res.status(200).json({
                 message:"Songs fetched successfully",
